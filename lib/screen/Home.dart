@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
-
+import '../slider/_slider.dart';
 import '../widets/support.dart';
+import 'shirtdetail.dart';
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  List categories = [
-    "assets/images/colorshirt.jpg",
-    "assets/images/tshirt1.jpg",
-    "assets/images/regularjeans.jpg",
-    "assets/images/men-s-jackets.jpg",
-  ];
-  @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> categories = [
+      {'images': 'assets/images/shirt1.png', 'text': 'Shirts'},
+      {'images': 'assets/images/tshirt1.png', 'text': 'Tshirts'},
+      {'images': 'assets/images/hoodie1.png', 'text': 'Hoodies'},
+      {'images': 'assets/images/jacket1.png', 'text': 'Jackets'},
+      {'images': 'assets/images/jeans1.png', 'text': 'Jeans'},
+    ];
+
     return Scaffold(
-      backgroundColor:Colors.white,
+      backgroundColor: Colors.white,
       body: Container(
-        margin: EdgeInsets.only(top: 50, left: 20, right: 15),
+        margin: EdgeInsets.only(top: 35, left: 15, right: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,26 +34,25 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 Image.asset(
-                  "assets/logos/outfitrlogo2.jpeg",
-                  height: 80,
-                  width: 80,
+                  "assets/logos/logo3.jpeg",
+                  height: 75,
+                  width: 75,
                   fit: BoxFit.cover,
                 ),
                 Image.asset(
                   "assets/images/avatar.png",
-                  height: 80,
-                  width: 80,
+                  height: 75,
+                  width: 75,
                   fit: BoxFit.cover,
                 ),
               ],
             ),
-            SizedBox(
-              height: 15,
-            ),
+            SizedBox(height: 7),
             Container(
-              padding: EdgeInsets.only(left: 12),
+              padding: EdgeInsets.only(left: 8),
               decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 219, 216, 216), borderRadius: BorderRadius.circular(10)),
+                  color: const Color.fromARGB(255, 219, 216, 216),
+                  borderRadius: BorderRadius.circular(10)),
               width: MediaQuery.of(context).size.width,
               child: TextField(
                 decoration: InputDecoration(
@@ -65,9 +62,9 @@ class _HomeState extends State<Home> {
                     prefixIcon: Icon(Icons.search)),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 8),
+            SliderScreen(),
+            SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -77,15 +74,39 @@ class _HomeState extends State<Home> {
             ),
             Container(
               margin: EdgeInsets.only(left: 10),
-              height: 150,
+              height: 165,
               child: ListView.builder(
-                  itemCount: categories.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return CategoryTile(image: categories[index]);
-                  }),
-            )
+                itemCount: categories.length,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return CategoryTile(
+                    image: categories[index]['images']!,
+                    text: categories[index]['text']!,
+                  );
+                },
+              ),
+            ),
+            Text("Special for you",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Container(
+              margin: EdgeInsets.only(left: 10),
+              height: 140,
+              child: ListView.builder(
+                itemCount: categories.length,
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return Special(
+                    image1: categories[index]['images']!,
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -93,25 +114,85 @@ class _HomeState extends State<Home> {
   }
 }
 
-// ignore: must_be_immutable
 class CategoryTile extends StatelessWidget {
-  String image;
-  CategoryTile({required this.image});
+  final String image;
+  final String text;
+
+  CategoryTile({
+    required this.image,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryItemsScreen(
+              categoryName: text,
+              updateLikedItems: (items) {},
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 10),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 251, 167, 77),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: 145,
+        width: 130,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              child: Image.asset(
+                image,
+                height: 140,
+                width: 130,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(height: 3),
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Special extends StatelessWidget {
+  final String image1;
+
+  Special({required this.image1});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 15),
+      margin: EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        color: const Color.fromARGB(255, 255, 255, 255),
+        borderRadius: BorderRadius.circular(12),
       ),
-      height: 200,
-      width: 120,
+      height: 140,
       child: Column(
-       children: [
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
           Image.asset(
-            image,
-            height: 120,
+            image1,
+            height: 140,
             width: 120,
             fit: BoxFit.cover,
           ),

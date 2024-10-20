@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-
-import 'screen/home.dart';
+import 'screen/signin.dart';
 
 void main() {
-  runApp(const outfitr());
+  runApp(MyApp());
 }
 
-class outfitr extends StatelessWidget {
-  const outfitr({super.key});
-
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'outfitr',
-      home: Home(),
+      title: 'Outfitr',
+       debugShowCheckedModeBanner: false,
+      home: SignInPage(),
     );
   }
 }
