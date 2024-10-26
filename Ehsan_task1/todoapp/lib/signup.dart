@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
 import 'login.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -12,42 +14,55 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   String email = "", password = "", name = "";
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController passwordcontroller = TextEditingController();
-  TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  final _formkey = GlobalKey<FormState>();
-
-  registration() async {
-    if (password.isNotEmpty &&
-        namecontroller.text.isNotEmpty &&
-        emailcontroller.text.isNotEmpty) {
+  Future<void> registration() async {
+    if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
+
+        String userId = userCredential.user!.uid;
+        await FirebaseFirestore.instance.collection('users').doc(userId).set({
+          'name': name,
+          'email': email,
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          "Registered Successfully",
-          style: TextStyle(fontSize: 20.0),
-        )));
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Home()));
+          content: Text(
+            "Registered Successfully",
+            style: TextStyle(fontSize: 20.0),
+          ),
+        ));
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Home(userId: userId),
+          ),
+        );
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.redAccent,
-              content: Text(
-                "Password is too Weak",
-                style: TextStyle(fontSize: 18.0),
-              )));
-        } else if (e.code == "email-already-in-use") {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.redAccent,
-              content: Text(
-                "Account Already exists",
-                style: TextStyle(fontSize: 18.0),
-              )));
+        String message;
+        switch (e.code) {
+          case 'weak-password':
+            message = "Password is too weak.";
+            break;
+          case "email-already-in-use":
+            message = "Account already exists.";
+            break;
+          default:
+            message = "An error occurred. Please try again.";
         }
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            message,
+            style: TextStyle(fontSize: 18.0),
+          ),
+        ));
       }
     }
   }
@@ -59,7 +74,7 @@ class _SignupState extends State<Signup> {
       body: SingleChildScrollView(
         child: Center(
           child: Container(
-            padding: EdgeInsets.only(top: 35, bottom: 12, left: 15, right: 15),
+            padding: EdgeInsets.symmetric(vertical: 35, horizontal: 15),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,35 +96,36 @@ class _SignupState extends State<Signup> {
                 ),
                 SizedBox(height: 20.0),
                 Form(
-                  key: _formkey,
+                  key: _formKey,
                   child: Column(
                     children: [
-                      _buildTextField(namecontroller, "Name", false, (value) {
-                        if (value!.isEmpty) return 'Please Enter Name';
+                      _buildTextField(nameController, "Name", false, (value) {
+                        if (value!.isEmpty) return 'Please enter your name';
                         return null;
                       }),
                       SizedBox(height: 20.0),
-                      _buildTextField(emailcontroller, "Email", false, (value) {
-                        if (value!.isEmpty) return 'Please Enter Email';
+                      _buildTextField(emailController, "Email", false, (value) {
+                        if (value!.isEmpty) return 'Please enter your email';
+                        if (!EmailValidator.validate(value)) {
+                          return 'Enter a valid email';
+                        }
                         return null;
                       }),
                       SizedBox(height: 20.0),
-                      _buildTextField(passwordcontroller, "Password", true,
+                      _buildTextField(passwordController, "Password", true,
                           (value) {
-                        if (value!.isEmpty) return 'Please Enter Password';
+                        if (value!.isEmpty) return 'Please enter your password';
                         return null;
                       }),
                       SizedBox(height: 30.0),
                       GestureDetector(
                         onTap: () {
-                          if (_formkey.currentState!.validate()) {
-                            setState(() {
-                              email = emailcontroller.text;
-                              name = namecontroller.text;
-                              password = passwordcontroller.text;
-                            });
-                            registration();
-                          }
+                          setState(() {
+                            email = emailController.text.trim();
+                            name = nameController.text.trim();
+                            password = passwordController.text.trim();
+                          });
+                          registration();
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.4,
@@ -144,10 +160,13 @@ class _SignupState extends State<Signup> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      "assets/images/google2.png",
-                      height: 70,
-                      width: 70,
+                    GestureDetector(
+                      onTap: () {},
+                      child: Image.asset(
+                        "assets/images/google2.png",
+                        height: 70,
+                        width: 70,
+                      ),
                     ),
                   ],
                 ),
@@ -163,11 +182,13 @@ class _SignupState extends State<Signup> {
                     SizedBox(width: 5.0),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => LogIn()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LogIn()),
+                        );
                       },
                       child: Text(
-                        "login",
+                        "Login",
                         style: TextStyle(
                             color: const Color.fromARGB(255, 4, 78, 139),
                             fontSize: 20.0,

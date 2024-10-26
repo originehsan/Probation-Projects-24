@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'forgotpassword.dart';
 import 'home.dart';
+import 'services/auth.dart';
 import 'signup.dart';
 
 class LogIn extends StatefulWidget {
@@ -21,9 +22,12 @@ class _LogInState extends State<LogIn> {
 
   userLogin() async {
     try {
-      await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Home(userId: userCredential.user!.uid)));
     } on FirebaseAuthException catch (e) {
       String message;
       if (e.code == 'user-not-found') {
@@ -40,6 +44,10 @@ class _LogInState extends State<LogIn> {
             style: TextStyle(fontSize: 16.0),
           )));
     }
+  }
+
+  void signInWithGoogle() async {
+    await AuthMethods().signInWithGoogle(context);
   }
 
   @override
@@ -132,7 +140,7 @@ class _LogInState extends State<LogIn> {
                 ),
                 SizedBox(height: 15.0),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: signInWithGoogle, 
                   child: Image.asset(
                     "assets/images/google2.png",
                     height: 70,
