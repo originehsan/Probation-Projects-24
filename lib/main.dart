@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/Section/contactme.dart';
+import 'package:portfolio/footer.dart';
 import 'Section/aboutme.dart';
 import 'Section/project.dart';
 import 'Section/skill.dart';
@@ -52,6 +53,8 @@ class MainPage extends StatelessWidget {
             ProjectSection(),
              SizedBox(height: 40),
             ContactSection(),
+            SizedBox(height: 40),
+            Footer(),
           ],
         ),
       ),

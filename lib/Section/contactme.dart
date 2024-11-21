@@ -59,7 +59,7 @@ class ContactSection extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Message sent!')),
+                SnackBar(content: Text('Message sent')),
               );
             },
             style: ElevatedButton.styleFrom(

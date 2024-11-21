@@ -57,7 +57,7 @@ class AboutMeSection extends StatelessWidget {
                             fontWeight: FontWeight.normal,
                             color: const Color.fromARGB(221, 9, 59, 122),
                           ),
-                          maxLines: 3,
+                          maxLines: 5,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
