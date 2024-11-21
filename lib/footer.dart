@@ -13,11 +13,11 @@ class Footer extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildSocialImage('assets/images/github.png', 'https://github.com/yourusername'),
+              _buildSocialImage('assets/images/github.png', 'https://github.com/originehsan'),
               SizedBox(width: 20),
-              _buildSocialImage('assets/images/linkedin.png', 'https://linkedin.com/in/yourusername'),
+              _buildSocialImage('assets/images/linkedin.png', 'https://www.linkedin.com/in/ehsan-ali-2547162a0/'),
               SizedBox(width: 20),
-              _buildSocialImage('assets/images/instagram.png', 'https://instagram.com/yourusername'),
+              _buildSocialImage('assets/images/instagram.png', 'https://www.instagram.com/ehsan786a/?next=%2F'),
             ],
           ),
           SizedBox(height: 20),
