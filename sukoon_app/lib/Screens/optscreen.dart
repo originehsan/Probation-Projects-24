@@ -1,7 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'homescreen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -14,45 +16,56 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final otpController = TextEditingController();
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final otpControllers = List.generate(6, (_) => TextEditingController());
+  final _focusNodes = List.generate(6, (_) => FocusNode());
+
+  void _onOtpChanged(String value, int index) {
+    if (value.length == 1 && index < 5) {
+      FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+    }
+  }
 
   Future<void> _verifyOtp() async {
-    final String otp = otpController.text;
-    final String email = widget.email;
-    final String token = widget.token;
+    String otp = otpControllers.map((controller) => controller.text).join();
 
-    if (otp.isEmpty) {
-      _showMessage('Please enter the OTP');
-      return;
-    }
+    if (otp.length == 6) {
+      final email = widget.email;
+      final token = widget.token;
 
-    final Map<String, String> payload = {
-      'email': email,
-      'otp': otp,
-      'token': token,
-    };
+      final Map<String, String> payload = {
+        'email': email,
+        'otp': otp,
+        'token': token,
+      };
 
-    final Uri url = Uri.parse('https://login-signup-page-w7f2.onrender.com/user/register/verify');
+      final Uri url = Uri.parse('https://login-signup-page-w7f2.onrender.com/user/register/verify');
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(payload),
-      );
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(payload),
+        );
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        _showMessage(responseData['message']);
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          _showMessage(responseData['message']);
 
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        final responseData = json.decode(response.body);
-        _showMessage(responseData['message']);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(email: widget.email, token: widget.token),
+            ),
+          );
+        } else {
+          final responseData = json.decode(response.body);
+          _showMessage(responseData['message']);
+        }
+      } catch (error) {
+        _showMessage('An error occurred. Please try again.');
       }
-    } catch (error) {
-      _showMessage('An error occurred. Please try again.');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter 6 digit OTP")));
     }
   }
 
@@ -61,33 +74,139 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   @override
+  void dispose() {
+    for (var controller in otpControllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Verify OTP')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: otpController,
-              decoration: InputDecoration(
-                labelText: 'Enter OTP',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/signupbg.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 35.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFF0DBAD4),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back_ios_new),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      color: Colors.black,
+                      iconSize: 30,
+                    ),
+                  ),
                 ),
-              ),
-              keyboardType: TextInputType.number,
+                SizedBox(height: 50),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Text(
+                    "Verify Account",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      fontFamily: "Alice"
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Verify your account by entering the verification code we sent to ",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black87,
+                        fontFamily: "Alice",
+                        fontWeight: FontWeight.w400,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: widget.email,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF01BBD6),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 60),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(6, (index) {
+                    return Container(
+                      width: 45,
+                      height: 45,
+                      margin: EdgeInsets.symmetric(horizontal: 6),
+                      child: Center(
+                        child: TextField(
+                          controller: otpControllers[index],
+                          focusNode: _focusNodes[index],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18),
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          onChanged: (value) => _onOtpChanged(value, index),
+                          decoration: InputDecoration(
+                            counterText: "",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(9),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 4,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                SizedBox(height: 60),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _verifyOtp,
+                    child: Text("Verify OTP" ,style: TextStyle(fontSize: 22,color: Colors.white),),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size( MediaQuery.of(context).size.width * 0.70, 53),
+                      backgroundColor: Color(0xFF33D7FF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _verifyOtp,
-              child: Text('Verify OTP'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                backgroundColor: Color(0xFF33D7FF),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
