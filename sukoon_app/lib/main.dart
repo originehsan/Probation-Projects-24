@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sukoon_app/Screens/Username.dart';
 import 'package:sukoon_app/Screens/authscreens/onboardmain.dart';
 
 void main() {
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Onboardmain(),
+      home: Username(),
     );
   }
 }
