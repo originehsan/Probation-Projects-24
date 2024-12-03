@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'homescreen.dart';
+import '../homescreen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -18,6 +18,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final otpControllers = List.generate(6, (_) => TextEditingController());
   final _focusNodes = List.generate(6, (_) => FocusNode());
+  bool _isLoading = false;  
 
   void _onOtpChanged(String value, int index) {
     if (value.length == 1 && index < 5) {
@@ -29,6 +30,10 @@ class _OtpScreenState extends State<OtpScreen> {
     String otp = otpControllers.map((controller) => controller.text).join();
 
     if (otp.length == 6) {
+      setState(() {
+        _isLoading = true;  
+      });
+
       final email = widget.email;
       final token = widget.token;
 
@@ -38,7 +43,7 @@ class _OtpScreenState extends State<OtpScreen> {
         'token': token,
       };
 
-      final Uri url = Uri.parse('https://login-signup-page-w7f2.onrender.com/user/register/verify');
+      final Uri url = Uri.parse('https://login-signup-page-3z09.onrender.com/user/register/verify');
 
       try {
         final response = await http.post(
@@ -63,6 +68,10 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       } catch (error) {
         _showMessage('An error occurred. Please try again.');
+      } finally {
+        setState(() {
+          _isLoading = false;  // Stop loading once the request is finished
+        });
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter 6 digit OTP")));
@@ -192,17 +201,23 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 SizedBox(height: 60),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: _verifyOtp,
-                    child: Text("Verify OTP" ,style: TextStyle(fontSize: 22,color: Colors.white),),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size( MediaQuery.of(context).size.width * 0.70, 53),
-                      backgroundColor: Color(0xFF33D7FF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
+                  child: _isLoading
+                      ? CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF33D7FF), // Custom color
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: _verifyOtp,
+                          child: Text("Verify OTP", style: TextStyle(fontSize: 22, color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(MediaQuery.of(context).size.width * 0.70, 53),
+                            backgroundColor: Color(0xFF33D7FF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
                 ),
               ],
             ),

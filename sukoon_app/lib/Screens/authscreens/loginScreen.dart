@@ -3,39 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
-import 'Screens/loginScreen.dart';
-import 'Screens/optscreen.dart';
+import 'package:sukoon_app/Screens/authscreens/forgetpassowrd.dart';
+import 'package:sukoon_app/Screens/homescreen.dart';
+import 'signup.dart';
+import 'package:lottie/lottie.dart';
 
-class SignUpScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
-  final nameController = TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   bool _isPasswordVisible = false;
+  bool _isLoading = false; 
 
-  Future<void> _signUp() async {
+  Future<void> _login() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    final String name = nameController.text;
+    setState(() {
+      _isLoading = true;  
+    });
+
     final String email = emailController.text;
     final String password = passwordController.text;
 
     final Map<String, String> payload = {
-      'name': name,
       'email': email,
       'password': password,
     };
 
-    final Uri url =
-        Uri.parse('https://login-signup-page-w7f2.onrender.com/user/register');
+    final Uri url = Uri.parse('https://login-signup-page-3z09.onrender.com/user/login');
 
     try {
       final response = await http.post(
@@ -49,11 +51,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _showMessage(responseData['message']);
         final token = responseData['token'];
 
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => OtpScreen(
-              email: email,
+            builder: (context) => HomeScreen(
+              email: email, 
               token: token,
             ),
           ),
@@ -64,12 +66,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (error) {
       _showMessage('An error occurred. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false; 
+      });
     }
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -85,10 +90,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: 15,
+                ),
                 Text(
-                  'SIGN UP',
+                  'LOGIN',
                   style: TextStyle(
                     fontSize: 32,
                     fontFamily: 'Alice',
@@ -96,52 +105,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF4B84926E),
-                    borderRadius: BorderRadius.circular(8),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: Lottie.asset(
+                    'assets/animation/loginanimation.json',
+                    fit: BoxFit.cover,
+                    height: 160,
+                    width: MediaQuery.of(context).size.width * 0.6,
                   ),
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF4B84926E),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Form(
+                      key: _formKey,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: TextFormField(
-                              controller: nameController,
-                              decoration: InputDecoration(
-                                labelText: 'Name',
-                                filled: true,
-                                fillColor: Colors.white,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your name';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
@@ -176,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
                             child: TextFormField(
                               controller: passwordController,
                               decoration: InputDecoration(
@@ -213,56 +201,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your password';
                                 }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
                                 return null;
                               },
                             ),
                           ),
                           SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: _signUp,
-                            child: Text('Sign Up',
-                                style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
-                              backgroundColor: Color(0xFF33D7FF),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          _isLoading
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF33D7FF),
+                                  ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: _login,
+                                  child: Text(
+                                    'Login',
+                                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(double.infinity, 50),
+                                    backgroundColor: Color(0xFF33D7FF),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                          SizedBox(height: 10),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ForgetPassword(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 8, 73, 135),
                               ),
-                              textStyle: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ),
                           SizedBox(height: 20),
                           RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                fontSize: 18,
+                                color: Colors.black,
+                                fontSize: 16,
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: "Have an account? ",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "Alice",
-                                      fontWeight: FontWeight.w400),
+                                  text: "Don't have an account?  ",
+                                  style: TextStyle(color: Colors.black),
                                 ),
                                 TextSpan(
-                                  text: "Login",
+                                  text: "Sign Up",
                                   style: TextStyle(
-                                      color:
-                                          const Color.fromARGB(255, 8, 73, 135),
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Alice",
-                                      fontSize: 18),
+                                    color: const Color.fromARGB(255, 8, 73, 135),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18, fontFamily: "Alice"
+                                  ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => LoginScreen(),
+                                          builder: (context) => SignUpScreen(),
                                         ),
                                       );
                                     },
@@ -273,6 +280,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ],
                       ),
                     ),
+                  ),
+                ),
+                SizedBox(height: 100),
+                Text(
+                  'Terms and Conditions',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color.fromARGB(255, 8, 73, 135),
+                    fontFamily: "Alice"
                   ),
                 ),
               ],

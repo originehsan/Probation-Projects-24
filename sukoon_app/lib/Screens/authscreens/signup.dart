@@ -3,34 +3,44 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
-import '../signup.dart';
+import 'loginScreen.dart';
 import 'optscreen.dart';
 
-class LoginScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isPasswordVisible = false;
 
-  Future<void> _login() async {
+  bool _isPasswordVisible = false;
+  bool _isLoading = false; 
+
+  Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+
+    final String name = nameController.text;
     final String email = emailController.text;
     final String password = passwordController.text;
 
     final Map<String, String> payload = {
+      'name': name,
       'email': email,
       'password': password,
     };
 
-    final Uri url = Uri.parse('https://login-signup-page-w7f2.onrender.com/user/login');
+    final Uri url =
+        Uri.parse('https://login-signup-page-3z09.onrender.com/user/register');
 
     try {
       final response = await http.post(
@@ -44,11 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _showMessage(responseData['message']);
         final token = responseData['token'];
 
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => OtpScreen(
-              email: email, 
+              email: email,
               token: token,
             ),
           ),
@@ -59,11 +69,16 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (error) {
       _showMessage('An error occurred. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false; 
+      });
     }
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -82,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'LOGIN',
+                  'SIGN UP',
                   style: TextStyle(
                     fontSize: 32,
                     fontFamily: 'Alice',
@@ -90,7 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: 14),
+                SizedBox(
+                  height: 10,
+                ),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.85,
                   padding: const EdgeInsets.all(16.0),
@@ -105,6 +122,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: TextFormField(
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Name',
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your name';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
@@ -176,47 +222,61 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your password';
                                 }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
                                 return null;
                               },
                             ),
                           ),
                           SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: _login,
-                            child: Text('Login' ,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold, color: Colors.white),),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
-                              backgroundColor: Color(0xFF33D7FF),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20),
+                          _isLoading
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF33D7FF)), // Custom color
+                                )
+                              : ElevatedButton(
+                                  onPressed: _signUp,
+                                  child: Text('Sign Up',
+                                      style: TextStyle(color: Colors.white)),
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(double.infinity, 50),
+                                    backgroundColor: Color(0xFF33D7FF),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    textStyle: TextStyle(
+                                        fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                          SizedBox(height: 35),
                           RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: "Don't have an account?  ",
-                                  style: TextStyle(color: Colors.white)
+                                  text: "Already have an account?  ",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: "Alice",
+                                      fontWeight: FontWeight.w400),
                                 ),
                                 TextSpan(
-                                  text: "Sign Up",
+                                  text: "Login",
                                   style: TextStyle(
-                                    color: const Color.fromARGB(255, 8, 73, 135),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18, fontFamily: "Alice"
-                                  ),
+                                      color:
+                                          const Color.fromARGB(255, 8, 73, 135),
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Alice",
+                                      fontSize: 20),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => SignUpScreen(),
+                                          builder: (context) => LoginScreen(),
                                         ),
                                       );
                                     },

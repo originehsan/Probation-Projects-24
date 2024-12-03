@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sukoon_app/Screens/onBoard.dart';
+import 'package:sukoon_app/Screens/authscreens/onboardmain.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: OnBoardingScreen(),
+      home: Onboardmain(),
     );
   }
 }

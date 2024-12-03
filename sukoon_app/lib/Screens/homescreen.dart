@@ -31,11 +31,6 @@ class HomeScreen extends StatelessWidget {
               "Email: $email",
               style: TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 10),
-            Text(
-              "Token: $token",
-              style: TextStyle(fontSize: 18),
-            ),
           ],
         ),
       ),
