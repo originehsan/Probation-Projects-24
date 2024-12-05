@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:sukoon_app/Screens/age.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:sukoon_app/Screens/suvery1.dart';
 
 class userAge extends StatefulWidget {
   const userAge({super.key});
@@ -108,7 +109,7 @@ class _userAgeState extends State<userAge> {
                         sendAge(age);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => userAge()),
+                          MaterialPageRoute(builder: (context) => Survey1()),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

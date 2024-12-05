@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sukoon_app/Screens/Username.dart';
+import 'package:sukoon_app/Screens/age.dart';
 import 'package:sukoon_app/Screens/authscreens/onboardmain.dart';
+import 'package:sukoon_app/Screens/suvery1.dart';
 
 void main() {
   runApp(const MyApp());

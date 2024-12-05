@@ -92,7 +92,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       }
     } catch (e) {
       setState(() {
-        // Display a more user-friendly message in case of error
         _errorMessage = 'An unexpected error occurred. Please try again later.';
       });
     } finally {

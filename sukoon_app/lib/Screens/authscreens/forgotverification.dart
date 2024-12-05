@@ -17,7 +17,7 @@ class Forgotverification extends StatefulWidget {
 class _ForgotverificationState extends State<Forgotverification> {
   final otpControllers = List.generate(6, (_) => TextEditingController());
   final _focusNodes = List.generate(6, (_) => FocusNode());
-  bool _isLoading = false;  // Track loading state
+  bool _isLoading = false;  
   String _errorMessage = '';
   String _successMessage = '';
 
@@ -40,7 +40,7 @@ class _ForgotverificationState extends State<Forgotverification> {
 
       try {
         final response = await http.post(
-          Uri.parse('https://login-signup-page-3z09.onrender.com/user/otp/verify'), // Replace with your backend URL
+          Uri.parse('https://login-signup-page-3z09.onrender.com/user/otp/verify'), 
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'email': widget.email,
@@ -61,7 +61,7 @@ class _ForgotverificationState extends State<Forgotverification> {
               context,
               MaterialPageRoute(
                 builder: (context) => ResetPasswordScreen(
-                  resetToken: responseBody['resetToken'], // Pass the reset token
+                  resetToken: responseBody['resetToken'], 
                 ),
               ),
             );
@@ -97,7 +97,7 @@ class _ForgotverificationState extends State<Forgotverification> {
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/signupbg.jpg'), // Update the background image path
+            image: AssetImage('assets/images/signupbg.jpg'), 
             fit: BoxFit.cover,
           ),
         ),
