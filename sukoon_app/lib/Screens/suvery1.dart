@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-
+import 'global_variable.dart';
 import 'survey2.dart';
 
 class Survey1 extends StatefulWidget {
-  const Survey1({super.key});
-
   @override
-  State<Survey1> createState() => _Survey1State();
+  _Survey1State createState() => _Survey1State();
 }
 
 class _Survey1State extends State<Survey1> {
-  double _workLifeBalance = 0.0;
-  double _overwhelmedFeeling = 0.0;
-  double _goalAchievement = 0.0;
+  double _socialRelationships = GlobalVariables.socialRelationships;
+  double _selfEsteem = GlobalVariables.selfEsteem;
+  double _emotionalWellBeing = GlobalVariables.emotionalWellBeing;
 
   double roundToHalf(double value) {
     return (value * 2).roundToDouble() / 2;
@@ -36,14 +34,12 @@ class _Survey1State extends State<Survey1> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 100,
-                ),
+                SizedBox(height: 100),
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Text(
-                      'Let’s have  a Quick Analysis',
+                      'Let’s have a Quick Analysis',
                       style: TextStyle(
                         fontSize: 29,
                         fontWeight: FontWeight.bold,
@@ -55,7 +51,7 @@ class _Survey1State extends State<Survey1> {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'How would you rate yourself in work-life balance?',
+                  'How easy is it for you to maintain meaningful connections with friends or family?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -67,7 +63,7 @@ class _Survey1State extends State<Survey1> {
                 SfSlider(
                   min: 0.0,
                   max: 4.0,
-                  value: _workLifeBalance,
+                  value: _socialRelationships,
                   interval: 1,
                   showTicks: true,
                   showLabels: true,
@@ -75,39 +71,14 @@ class _Survey1State extends State<Survey1> {
                   minorTicksPerInterval: 1,
                   onChanged: (dynamic value) {
                     setState(() {
-                      _workLifeBalance = roundToHalf(value);
+                      _socialRelationships = roundToHalf(value);
                     });
+                    GlobalVariables.socialRelationships = _socialRelationships;
                   },
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'How often do you feel overwhelmed by daily tasks?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: "Alice"
-                  ),
-                ),
-                SizedBox(height: 20),
-                SfSlider(
-                  min: 0.0,
-                  max: 4.0,
-                  value: _overwhelmedFeeling,
-                  interval: 1,
-                  showTicks: true,
-                  showLabels: true,
-                  enableTooltip: true,
-                  minorTicksPerInterval: 1,
-                  onChanged: (dynamic value) {
-                    setState(() {
-                      _overwhelmedFeeling = roundToHalf(value);
-                    });
-                  },
-                ),
-                SizedBox(height: 30),
-                Text(
-                  'Do you believe you are capable of achieving your personal goals?',
+                  'How confident are you in your abilities and strengths?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -119,7 +90,7 @@ class _Survey1State extends State<Survey1> {
                 SfSlider(
                   min: 0.0,
                   max: 4.0,
-                  value: _goalAchievement,
+                  value: _selfEsteem,
                   interval: 1,
                   showTicks: true,
                   showLabels: true,
@@ -127,8 +98,36 @@ class _Survey1State extends State<Survey1> {
                   minorTicksPerInterval: 1,
                   onChanged: (dynamic value) {
                     setState(() {
-                      _goalAchievement = roundToHalf(value);
+                      _selfEsteem = roundToHalf(value);
                     });
+                    GlobalVariables.selfEsteem = _selfEsteem;
+                  },
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'How easy do you find it to express your feelings to others?',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: "Alice",
+                  ),
+                ),
+                SizedBox(height: 20),
+                SfSlider(
+                  min: 0.0,
+                  max: 4.0,
+                  value: _emotionalWellBeing,
+                  interval: 1,
+                  showTicks: true,
+                  showLabels: true,
+                  enableTooltip: true,
+                  minorTicksPerInterval: 1,
+                  onChanged: (dynamic value) {
+                    setState(() {
+                      _emotionalWellBeing = roundToHalf(value);
+                    });
+                    GlobalVariables.emotionalWellBeing = _emotionalWellBeing;
                   },
                 ),
                 SizedBox(height: 45),
@@ -141,7 +140,10 @@ class _Survey1State extends State<Survey1> {
                         MaterialPageRoute(builder: (context) => Survey2()),
                       );
                     },
-                    child: Text('Continue', style: TextStyle(fontSize: 20,color: Colors.white,fontFamily: "Alice")),
+                    child: Text(
+                      'Continue',
+                      style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "Alice"),
+                    ),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(100, 50),
                       backgroundColor: Color(0xFF23B9FF),

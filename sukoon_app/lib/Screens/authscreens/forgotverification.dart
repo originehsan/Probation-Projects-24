@@ -1,15 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import '../global_variable.dart';
 import 'resetscreen.dart';
 
 class Forgotverification extends StatefulWidget {
-  final String email;
-  final String token;
-
-  Forgotverification({required this.email, required this.token});
-
   @override
   _ForgotverificationState createState() => _ForgotverificationState();
 }
@@ -43,9 +38,9 @@ class _ForgotverificationState extends State<Forgotverification> {
           Uri.parse('https://login-signup-page-3z09.onrender.com/user/otp/verify'), 
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
-            'email': widget.email,
+            'email': GlobalVariables.email,  
             'otp': otp,
-            'token': widget.token,
+            'token': GlobalVariables.token,  
           }),
         );
 
@@ -57,11 +52,12 @@ class _ForgotverificationState extends State<Forgotverification> {
               _successMessage = 'OTP verified successfully!';
             });
 
+            // Pass resetToken to ResetPasswordScreen
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ResetPasswordScreen(
-                  resetToken: responseBody['resetToken'], 
+                  resetToken: responseBody['resetToken'],  
                 ),
               ),
             );
@@ -72,7 +68,7 @@ class _ForgotverificationState extends State<Forgotverification> {
           }
         } else {
           setState(() {
-            _errorMessage = 'Unexpected error occured';
+            _errorMessage = 'Unexpected error occurred';
           });
         }
       } catch (e) {
@@ -151,7 +147,7 @@ class _ForgotverificationState extends State<Forgotverification> {
                       ),
                       children: [
                         TextSpan(
-                          text: widget.email,
+                          text: GlobalVariables.email,  // Use the global email
                           style: TextStyle(
                             fontSize: 18,
                             color: Color(0xFF01BBD6),

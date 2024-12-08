@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-
+import 'global_variable.dart';
 import 'survey3.dart';
 
 class Survey2 extends StatefulWidget {
-  const Survey2({super.key});
-
   @override
   State<Survey2> createState() => _Survey2State();
 }
 
 class _Survey2State extends State<Survey2> {
-  double _workLifeBalance = 0.0;
-  double _overwhelmedFeeling = 0.0;
-  double _goalAchievement = 0.0;
+  double _overwhelmedByDemands = GlobalVariables.overwhelmedByDemands;
+  double _workLifeBalanceSatisfaction = GlobalVariables.workLifeBalanceSatisfaction;
+  double _personalGoalAchievement = GlobalVariables.personalGoalAchievement;
 
   double roundToHalf(double value) {
-    return (value * 2).roundToDouble() / 2; 
+    return (value * 2).roundToDouble() / 2;
   }
 
   @override
@@ -36,14 +34,12 @@ class _Survey2State extends State<Survey2> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 100,
-                ),
+                SizedBox(height: 100),
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Text(
-                      'Let’s have  a Quick Analysis',
+                      'Let’s have a Quick Analysis',
                       style: TextStyle(
                         fontSize: 29,
                         fontWeight: FontWeight.bold,
@@ -55,7 +51,7 @@ class _Survey2State extends State<Survey2> {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'How often do you engage in negative self-talk?',
+                  'How often do you feel overwhelmed by the demands of life?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -67,7 +63,7 @@ class _Survey2State extends State<Survey2> {
                 SfSlider(
                   min: 0.0,
                   max: 4.0,
-                  value: _workLifeBalance,
+                  value: _overwhelmedByDemands,
                   interval: 1,
                   showTicks: true,
                   showLabels: true,
@@ -75,39 +71,14 @@ class _Survey2State extends State<Survey2> {
                   minorTicksPerInterval: 1,
                   onChanged: (dynamic value) {
                     setState(() {
-                      _workLifeBalance = roundToHalf(value);
+                      _overwhelmedByDemands = roundToHalf(value);
                     });
+                    GlobalVariables.overwhelmedByDemands = _overwhelmedByDemands;
                   },
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'How would you describe your social interactions recently?',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: "Alice"
-                  ),
-                ),
-                SizedBox(height: 20),
-                SfSlider(
-                  min: 0.0,
-                  max: 4.0,
-                  value: _overwhelmedFeeling,
-                  interval: 1,
-                  showTicks: true,
-                  showLabels: true,
-                  enableTooltip: true,
-                  minorTicksPerInterval: 1,
-                  onChanged: (dynamic value) {
-                    setState(() {
-                      _overwhelmedFeeling = roundToHalf(value);
-                    });
-                  },
-                ),
-                SizedBox(height: 30),
-                Text(
-                  'How well do you adapt to sudden changes?',
+                  'How satisfied are you with your work-life balance?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -119,7 +90,7 @@ class _Survey2State extends State<Survey2> {
                 SfSlider(
                   min: 0.0,
                   max: 4.0,
-                  value: _goalAchievement,
+                  value: _workLifeBalanceSatisfaction,
                   interval: 1,
                   showTicks: true,
                   showLabels: true,
@@ -127,8 +98,36 @@ class _Survey2State extends State<Survey2> {
                   minorTicksPerInterval: 1,
                   onChanged: (dynamic value) {
                     setState(() {
-                      _goalAchievement = roundToHalf(value);
+                      _workLifeBalanceSatisfaction = roundToHalf(value);
                     });
+                    GlobalVariables.workLifeBalanceSatisfaction = _workLifeBalanceSatisfaction;
+                  },
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'How often do you set and achieve personal goals?',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: "Alice",
+                  ),
+                ),
+                SizedBox(height: 20),
+                SfSlider(
+                  min: 0.0,
+                  max: 4.0,
+                  value: _personalGoalAchievement,
+                  interval: 1,
+                  showTicks: true,
+                  showLabels: true,
+                  enableTooltip: true,
+                  minorTicksPerInterval: 1,
+                  onChanged: (dynamic value) {
+                    setState(() {
+                      _personalGoalAchievement = roundToHalf(value);
+                    });
+                    GlobalVariables.personalGoalAchievement = _personalGoalAchievement;
                   },
                 ),
                 SizedBox(height: 45),

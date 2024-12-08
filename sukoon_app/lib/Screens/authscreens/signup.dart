@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
+import '../global_variable.dart';
 import 'loginScreen.dart';
 import 'optscreen.dart';
 
@@ -54,12 +55,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _showMessage(responseData['message']);
         final token = responseData['token'];
 
+        GlobalVariables.email = email;
+        GlobalVariables.token = token;
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => OtpScreen(
-              email: email,
-              token: token,
             ),
           ),
         );
@@ -232,8 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           SizedBox(height: 20),
                           _isLoading
                               ? CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color(0xFF33D7FF)), // Custom color
+                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF33D7FF)), // Custom color
                                 )
                               : ElevatedButton(
                                   onPressed: _signUp,
@@ -273,7 +274,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       fontSize: 20),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigator.pushReplacement(
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LoginScreen(),

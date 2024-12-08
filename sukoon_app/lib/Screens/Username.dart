@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:sukoon_app/Screens/age.dart';
+import 'package:sukoon_app/Screens/age.dart';  // Import userAge screen
+import 'global_variable.dart';  // Import global variables
 
 class Username extends StatefulWidget {
   @override
@@ -21,6 +21,8 @@ class _UsernameState extends State<Username> {
       },
       body: json.encode({
         'username': username,
+        'email': GlobalVariables.email,  // Access global email directly
+        'token': GlobalVariables.token,  // Access global token directly
       }),
     );
 

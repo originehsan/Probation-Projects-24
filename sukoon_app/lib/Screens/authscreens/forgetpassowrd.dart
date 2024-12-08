@@ -6,6 +6,8 @@ import 'package:sukoon_app/Screens/authscreens/forgotverification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:sukoon_app/Screens/authscreens/loginScreen.dart';
 
+import '../global_variable.dart';
+
 class ForgetPassword extends StatefulWidget {
   @override
   _ForgetPasswordState createState() => _ForgetPasswordState();
@@ -57,12 +59,15 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             _successMessage = responseBody['message'];
           });
 
+          // Set global variables for email and token
+          GlobalVariables.email = email;  
+          GlobalVariables.token = responseBody['token']; 
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Forgotverification(
-                email: email,
-                token: responseBody['token'],
+                
               ),
             ),
           );
@@ -191,12 +196,12 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                           Navigator.pushReplacement(
-              context,
-            MaterialPageRoute(
-              builder: (context) => LoginScreen() 
-            ),
-          );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(), 
+                              ),
+                            );
                           },
                       ),
                     ],

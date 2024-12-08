@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:sukoon_app/Screens/age.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:sukoon_app/Screens/suvery1.dart';
+
+import 'global_variable.dart';
+import 'suvery1.dart';  
 
 class userAge extends StatefulWidget {
-  const userAge({super.key});
-
   @override
   State<userAge> createState() => _userAgeState();
 }
@@ -17,7 +15,7 @@ class _userAgeState extends State<userAge> {
   int _currentValue = 18;
 
   Future<void> sendAge(String age) async {
-    final url = '';
+    final url = ''; 
     final response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
@@ -25,6 +23,8 @@ class _userAgeState extends State<userAge> {
       },
       body: json.encode({
         'age': age,
+        'email': GlobalVariables.email,  // Access global email
+        'token': GlobalVariables.token,  // Access global token
       }),
     );
 
@@ -109,7 +109,9 @@ class _userAgeState extends State<userAge> {
                         sendAge(age);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Survey1()),
+                          MaterialPageRoute(
+                            builder: (context) => Survey1(),  
+                          ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

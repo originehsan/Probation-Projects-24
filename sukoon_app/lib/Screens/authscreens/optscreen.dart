@@ -1,15 +1,12 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../homescreen.dart';
+import 'package:sukoon_app/Screens/Username.dart';  // Import Username screen
+import '../global_variable.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String email;
-  final String token;
-
-  OtpScreen({required this.email, required this.token});
+  // Constructor without parameters
+  OtpScreen({Key? key}) : super(key: key);
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -18,7 +15,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final otpControllers = List.generate(6, (_) => TextEditingController());
   final _focusNodes = List.generate(6, (_) => FocusNode());
-  bool _isLoading = false;  
+  bool _isLoading = false;
 
   void _onOtpChanged(String value, int index) {
     if (value.length == 1 && index < 5) {
@@ -31,11 +28,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
     if (otp.length == 6) {
       setState(() {
-        _isLoading = true;  
+        _isLoading = true;
       });
 
-      final email = widget.email;
-      final token = widget.token;
+      final email = GlobalVariables.email;  
+      final token = GlobalVariables.token; 
 
       final Map<String, String> payload = {
         'email': email,
@@ -56,10 +53,12 @@ class _OtpScreenState extends State<OtpScreen> {
           final responseData = json.decode(response.body);
           _showMessage(responseData['message']);
 
+          // Pass the email and token to the Username screen
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(email: widget.email, token: widget.token),
+              builder: (context) => Username(
+              ),
             ),
           );
         } else {
@@ -70,7 +69,7 @@ class _OtpScreenState extends State<OtpScreen> {
         _showMessage('An error occurred. Please try again.');
       } finally {
         setState(() {
-          _isLoading = false;  // Stop loading once the request is finished
+          _isLoading = false;
         });
       }
     } else {
@@ -155,7 +154,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       children: [
                         TextSpan(
-                          text: widget.email,
+                          text: GlobalVariables.email, 
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF01BBD6),
@@ -203,9 +202,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 Center(
                   child: _isLoading
                       ? CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFF33D7FF), // Custom color
-                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF33D7FF)), // Custom color
                         )
                       : ElevatedButton(
                           onPressed: _verifyOtp,

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
+import 'package:sukoon_app/Screens/Username.dart';
 import 'package:sukoon_app/Screens/authscreens/forgetpassowrd.dart';
 import 'package:sukoon_app/Screens/homescreen.dart';
+import '../global_variable.dart';
 import 'signup.dart';
 import 'package:lottie/lottie.dart';
 
@@ -51,12 +53,12 @@ class _LoginScreenState extends State<LoginScreen> {
         _showMessage(responseData['message']);
         final token = responseData['token'];
 
+        GlobalVariables.email = email;
+        GlobalVariables.token = token;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              email: email, 
-              token: token,
+            builder: (context) => Username(
             ),
           ),
         );
@@ -208,9 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 20),
                           _isLoading
                               ? CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF33D7FF),
-                                  ),
+                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF33D7FF)),
                                 )
                               : ElevatedButton(
                                   onPressed: _login,

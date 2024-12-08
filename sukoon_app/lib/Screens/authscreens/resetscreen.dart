@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import '../global_variable.dart';
 import 'loginScreen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String resetToken;
+  final String resetToken;  
 
-  ResetPasswordScreen({required this.resetToken});
+  ResetPasswordScreen({required this.resetToken});  
 
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
@@ -59,7 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         Uri.parse('https://login-signup-page-3z09.onrender.com/user/reset/password'), 
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'resetToken': widget.resetToken,
+          'resetToken': widget.resetToken,  
           'newPassword': newPassword,
           'confirmPassword': confirmPassword,
         }),
