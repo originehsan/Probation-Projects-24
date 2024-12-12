@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sukoon_app/Screens/bottomnavscreens/bottomnav.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'global_variable.dart';
-import 'homescreen.dart';
+
+final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 class Survey4 extends StatefulWidget {
   @override
@@ -12,12 +16,45 @@ class Survey4 extends StatefulWidget {
 
 class _Survey4State extends State<Survey4> {
   bool isLoading = false;
+  String? email;  // Variable to store email
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEmail();  // Load email from secure storage when the screen is initialized
+    _loadStatsData();  // Load the previously saved stats data from local storage
+  }
+
+  // Method to load the stored email from secure storage
+  Future<void> _loadEmail() async {
+    final storedEmail = await secureStorage.read(key: 'user_email');
+    setState(() {
+      email = storedEmail;
+    });
+  }
+
+  // Method to load the stored stats data from secure storage
+  Future<void> _loadStatsData() async {
+    String? storedStats = await secureStorage.read(key: 'survey_stats');
+    if (storedStats != null) {
+      final stats = json.decode(storedStats);
+      setState(() {
+        // Load the stored stats into GlobalVariables or wherever you need it
+        GlobalVariables.stats = stats;
+      });
+    }
+  }
 
   double roundToHalf(double value) {
     return (value * 2).roundToDouble() / 2;
   }
 
   Future<void> submitSurvey() async {
+    if (email == null) {
+      // If email is not loaded yet, prevent submitting survey
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
@@ -25,7 +62,7 @@ class _Survey4State extends State<Survey4> {
     final url = Uri.parse('https://login-signup-page-3z09.onrender.com/user/submit-survey');
 
     final surveyData = {
-      'email': GlobalVariables.email,
+      'email': email,  // Use the loaded email instead of GlobalVariables.email
       'emotionalWellBeing': {
         'happiness': GlobalVariables.socialRelationships,
         'recovery': GlobalVariables.selfEsteem,
@@ -75,25 +112,33 @@ class _Survey4State extends State<Survey4> {
               'selfEsteem': '0',
             };
 
+            // Save the stats data to local storage to persist it
+            await secureStorage.write(
+              key: 'survey_stats',
+              value: json.encode(stats),
+            );
+
+            // Update GlobalVariables with the new stats
+            GlobalVariables.stats = stats;
+
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen(stats: stats)),
+              MaterialPageRoute(
+                builder: (context) => Bottomnav(),
+              ),
               (Route<dynamic> route) => false,
             );
           } else {
-            // No action, just proceed
+            // Handle other cases if needed
           }
         } catch (e) {
           print("Error: Unable to parse response data.");
-         
         }
       } else {
-        print("Error: Unable to submit survey. Status code");
-        
+        print("Error: Unable to submit survey. Status code: ${response.statusCode}");
       }
     } catch (e) {
       print("Error: Unable to send request.");
-     
     } finally {
       setState(() {
         isLoading = false;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:sukoon_app/Screens/age.dart';  // Import userAge screen
-import 'global_variable.dart';  // Import global variables
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Import secure storage
+import 'package:sukoon_app/Screens/age.dart'; // Import userAge screen
+import 'global_variable.dart'; // Import global variables
 
 class Username extends StatefulWidget {
   @override
@@ -11,26 +10,19 @@ class Username extends StatefulWidget {
 
 class _UsernameState extends State<Username> {
   final TextEditingController _controller = TextEditingController();
+  final FlutterSecureStorage _storage = FlutterSecureStorage(); // Initialize secure storage
 
-  Future<void> sendUsername(String username) async {
-    final url = 'https://login-signup-page-3z09.onrender.com/user/set/username';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({
-        'username': username,
-        'email': GlobalVariables.email,  // Access global email directly
-        'token': GlobalVariables.token,  // Access global token directly
-      }),
-    );
+  // Method to store the username and email directly when entered by the user
+  Future<void> storeUsernameAndEmail(String username) async {
+    // Store username and email in FlutterSecureStorage using the 'email' key
+    await _storage.write(key: 'username', value: username);
+    await _storage.write(key: 'user_email', value: GlobalVariables.email); // Storing the email as 'email'
+    
+    // Update the global variable with the entered username
+    GlobalVariables.username = username;
 
-    if (response.statusCode == 200) {
-      print('Welcome $username');
-    } else {
-      print('Please again enter your name');
-    }
+    print('Stored username: $username');
+    print('Stored email: ${GlobalVariables.email}'); // Email remains unchanged
   }
 
   @override
@@ -72,7 +64,8 @@ class _UsernameState extends State<Username> {
                   Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 32, right: 25, bottom: 20),
+                        padding: const EdgeInsets.only(
+                            left: 32, right: 25, bottom: 20),
                         child: Text(
                           'What we should call you ?',
                           style: TextStyle(
@@ -86,7 +79,8 @@ class _UsernameState extends State<Username> {
                       ),
                       SizedBox(height: 0),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 30),
                         child: Container(
                           width: 280,
                           height: 65,
@@ -94,9 +88,14 @@ class _UsernameState extends State<Username> {
                             controller: _controller,
                             decoration: InputDecoration(
                               labelText: 'Enter your name',
-                              labelStyle: TextStyle(color: Colors.black, fontFamily: "Alice", fontSize: 16),
+                              labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: "Alice",
+                                  fontSize: 16),
                               filled: true,
-                              fillColor: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.7),
+                              fillColor:
+                                  const Color.fromARGB(255, 255, 255, 255)
+                                      .withOpacity(0.7),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
@@ -121,7 +120,7 @@ class _UsernameState extends State<Username> {
                     onPressed: () {
                       final username = _controller.text.trim();
                       if (username.isNotEmpty) {
-                        sendUsername(username);
+                        storeUsernameAndEmail(username);
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => userAge()),
@@ -134,7 +133,10 @@ class _UsernameState extends State<Username> {
                     },
                     child: Text(
                       'Next',
-                      style: TextStyle(fontSize: 22, fontFamily: "Alice", color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontFamily: "Alice",
+                          color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(100, 50),

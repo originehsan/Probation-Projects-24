@@ -1,6 +1,7 @@
 class GlobalVariables {
   static String email = '';
   static String token = '';
+  static String username = '';
 
   static double socialRelationships = 0.0;
   static double selfEsteem = 0.0;
@@ -21,5 +22,11 @@ class GlobalVariables {
   static double financialSecurity = 0.0;
   static double socialSupport = 0.0;
 
-
+  
+  static Map<String, dynamic> stats = {
+    'emotionalWellBeing': 0.0,
+    'stressAndAnxiety': 0.0,
+    'socialRelationships': 0.0,
+    'selfEsteem': 0.0,
+  };
 }

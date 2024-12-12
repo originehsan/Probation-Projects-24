@@ -6,6 +6,7 @@ import 'package:email_validator/email_validator.dart';
 import '../global_variable.dart';
 import 'loginScreen.dart';
 import 'optscreen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -20,6 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _isPasswordVisible = false;
   bool _isLoading = false; 
+
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) {
@@ -58,11 +61,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         GlobalVariables.email = email;
         GlobalVariables.token = token;
 
+        // Store token in secure storage
+        await secureStorage.write(key: 'auth_token', value: token);
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => OtpScreen(
-            ),
+            builder: (context) => OtpScreen(),
           ),
         );
       } else {
@@ -274,7 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       fontSize: 20),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LoginScreen(),

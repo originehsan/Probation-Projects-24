@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:sukoon_app/Screens/Username.dart';  // Import Username screen
+import 'package:sukoon_app/Screens/age.dart';
 import '../global_variable.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -54,14 +55,15 @@ class _OtpScreenState extends State<OtpScreen> {
           _showMessage(responseData['message']);
 
           // Pass the email and token to the Username screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Username(
+         Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Username(),
               ),
-            ),
-          );
-        } else {
+              (Route<dynamic> route) => false,
+            );
+        }
+         else {
           final responseData = json.decode(response.body);
           _showMessage(responseData['message']);
         }

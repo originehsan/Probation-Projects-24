@@ -5,10 +5,13 @@ import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
 import 'package:sukoon_app/Screens/Username.dart';
 import 'package:sukoon_app/Screens/authscreens/forgetpassowrd.dart';
-import 'package:sukoon_app/Screens/homescreen.dart';
+import 'package:sukoon_app/Screens/bottomnavscreens/bottomnav.dart';
 import '../global_variable.dart';
 import 'signup.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -53,15 +56,23 @@ class _LoginScreenState extends State<LoginScreen> {
         _showMessage(responseData['message']);
         final token = responseData['token'];
 
+        // Store the token securely in Flutter Secure Storage
+        await secureStorage.write(key: 'auth_token', value: token);  // Store token
+
+        // Store the email securely
+        await secureStorage.write(key: 'user_email', value: email);  // Store email securely
+
+        // Store the email and token in the global variable
         GlobalVariables.email = email;
         GlobalVariables.token = token;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Username(
-            ),
-          ),
-        );
+
+        Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Bottomnav(),
+              ),
+              (Route<dynamic> route) => false,
+            );
       } else {
         final responseData = json.decode(response.body);
         _showMessage(responseData['message']);

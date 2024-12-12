@@ -55,7 +55,7 @@ class _OnboardmainState extends State<Onboardmain> {
                 SizedBox(height: 40),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
                     );
